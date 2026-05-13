@@ -26,7 +26,7 @@ Open the local Wrangler URL and submit a check-in. Leave "Use Workers AI" off un
 ## Provision Cloudflare resources
 
 ```sh
-npx wrangler d1 create web-agent-cf-demo-db
+npx wrangler d1 create web-agent-cf-demo-db-2
 npx wrangler r2 bucket create web-agent-cf-demo-receipts
 npx wrangler queues create web-agent-cf-events
 ```

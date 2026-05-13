@@ -25,20 +25,19 @@
 	],
 	"d1_databases": [
 		{
-			"binding": "DB",
-			"database_name": "web-agent-cf-demo-db",
-			"database_id": "00000000-0000-0000-0000-000000000000"
-		},
-		{
-			"binding": "web_agent_cf_demo_db",
-			"database_name": "web-agent-cf-demo-db",
-			"database_id": "7796507a-0c85-4ecb-862e-a9fc7a814c19"
+			"binding": "web_agent_cf_demo_db_2",
+			"database_name": "web-agent-cf-demo-db-2",
+			"database_id": "ce5d5129-19eb-4e4a-9ce7-93c4f3f8aa3e"
 		}
 	],
 	"r2_buckets": [
 		{
 			"binding": "BUCKET",
 			"bucket_name": "web-agent-cf-demo-receipts"
+		},
+		{
+			"bucket_name": "web-agent-cf-demo-receipts",
+			"binding": "web_agent_cf_demo_receipts"
 		}
 	],
 	"queues": {
