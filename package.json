@@ -1,0 +1,22 @@
+{
+  "name": "web-agent-cf",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Small Cloudflare Workers demo using Durable Objects, D1, R2, Queues, and optional Workers AI.",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "typecheck": "tsc --noEmit",
+    "db:migrate:local": "wrangler d1 migrations apply web-agent-cf-demo-db --local",
+    "db:migrate:remote": "wrangler d1 migrations apply web-agent-cf-demo-db --remote"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "4.20260511.1",
+    "typescript": "^5.9.3",
+    "wrangler": "4.90.1"
+  }
+}
