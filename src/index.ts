@@ -20,6 +20,7 @@ interface Env {
   DB: D1Database;
   BUCKET: R2Bucket;
   EVENTS_QUEUE: Queue<DemoEvent>;
+  ASSETS: Fetcher;
   AI?: AiBinding;
 }
 
@@ -102,6 +103,10 @@ const worker: ExportedHandler<Env, DemoEvent> = {
 
     if (url.pathname === "/favicon.ico" && request.method === "GET") {
       return favicon();
+    }
+
+    if (url.pathname.startsWith("/assets/") && request.method === "GET") {
+      return env.ASSETS.fetch(request);
     }
 
     if (url.pathname === "/api/status" && request.method === "GET") {
@@ -342,75 +347,135 @@ function homeHtml(): string {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Cloudflare Edge Guestbook</title>
+  <title>Oslo Edge Registry</title>
   <style>
     :root {
       color-scheme: light;
-      --ink: #1b1f23;
-      --muted: #5f6670;
-      --line: #d8dde3;
+      --ink: #172126;
+      --muted: #64717a;
+      --line: #d9e1e5;
       --panel: #ffffff;
-      --soft: #f3f7f8;
-      --accent: #d9480f;
-      --green: #0b7a53;
-      --blue: #1455d9;
+      --soft: #eef3f4;
+      --ice: #f7faf9;
+      --fjord: #0d5963;
+      --forest: #124536;
+      --copper: #b9562d;
+      --sun: #dca447;
+      --blue: #285c8f;
     }
     * { box-sizing: border-box; }
     body {
       margin: 0;
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       color: var(--ink);
-      background: var(--soft);
+      background:
+        linear-gradient(180deg, #f8fbfb 0, var(--soft) 460px, #e8eeef 100%);
     }
-    header {
-      min-height: 34vh;
+    .hero {
+      min-height: 42vh;
       display: grid;
       align-items: end;
-      padding: 48px 20px 28px;
+      padding: 42px 20px 30px;
       background:
-        linear-gradient(120deg, rgba(6, 41, 61, 0.78), rgba(10, 89, 74, 0.56)),
-        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 520'%3E%3Crect width='1200' height='520' fill='%23e8f2f1'/%3E%3Cg fill='none' stroke='%23ffffff' stroke-width='22' opacity='.52'%3E%3Cpath d='M80 390c180-150 310-210 470-160s250 150 570-20'/%3E%3Cpath d='M20 255c210-130 405-145 560-45s270 118 590-80'/%3E%3C/g%3E%3Cg fill='%23ffffff' opacity='.9'%3E%3Ccircle cx='223' cy='185' r='18'/%3E%3Ccircle cx='573' cy='260' r='24'/%3E%3Ccircle cx='932' cy='171' r='20'/%3E%3C/g%3E%3C/svg%3E");
+        linear-gradient(90deg, rgba(12, 31, 37, .84), rgba(18, 69, 54, .52) 48%, rgba(12, 31, 37, .18)),
+        url("/assets/oslo-opera-house.jpg");
       background-size: cover;
       background-position: center;
     }
-    .hero, main { width: min(1080px, calc(100% - 32px)); margin: 0 auto; }
-    .hero h1 {
-      margin: 0 0 10px;
+    .wrap {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+    }
+    .hero-inner {
+      display: grid;
+      gap: 18px;
+      align-content: end;
+      min-height: 230px;
+    }
+    .kicker {
+      width: fit-content;
+      padding: 7px 10px;
+      border: 1px solid rgba(255,255,255,.44);
+      border-radius: 999px;
+      color: rgba(255,255,255,.92);
+      font-size: .76rem;
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    h1 {
+      margin: 0;
       color: white;
-      font-size: clamp(2.2rem, 8vw, 5.8rem);
-      line-height: .96;
+      font-size: clamp(2.4rem, 7vw, 5.6rem);
+      line-height: .94;
       letter-spacing: 0;
-      max-width: 920px;
+      max-width: 850px;
     }
     .hero p {
       margin: 0;
-      color: rgba(255,255,255,.88);
-      font-size: 1.08rem;
-      max-width: 680px;
+      color: rgba(255,255,255,.9);
+      font-size: clamp(1rem, 2vw, 1.18rem);
+      max-width: 650px;
     }
-    main { padding: 22px 0 44px; }
+    main { padding: 18px 0 46px; }
+    .deck {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .tile {
+      min-height: 82px;
+      padding: 13px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: rgba(255,255,255,.84);
+    }
+    .tile span {
+      display: block;
+      color: var(--muted);
+      font-size: .76rem;
+      font-weight: 760;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+    }
+    .tile strong {
+      display: block;
+      margin-top: 8px;
+      font-size: 1.55rem;
+      line-height: 1;
+    }
     .grid {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) 340px;
+      grid-template-columns: minmax(0, 1fr) 360px;
       gap: 16px;
       align-items: start;
     }
     section, aside, .item {
       background: var(--panel);
       border: 1px solid var(--line);
-      border-radius: 8px;
+      border-radius: 6px;
     }
-    section, aside { padding: 18px; }
-    h2 { margin: 0 0 14px; font-size: 1.05rem; }
-    label { display: block; margin: 0 0 6px; color: var(--muted); font-size: .84rem; }
+    section, aside { padding: 18px; box-shadow: 0 16px 38px rgba(31, 45, 50, .07); }
+    h2 {
+      margin: 0 0 14px;
+      font-size: 1.02rem;
+      letter-spacing: .01em;
+    }
+    label { display: block; margin: 0 0 6px; color: var(--muted); font-size: .84rem; font-weight: 650; }
     input, textarea {
       width: 100%;
       border: 1px solid var(--line);
       border-radius: 6px;
-      padding: 11px 12px;
+      padding: 12px;
       font: inherit;
-      background: white;
+      background: var(--ice);
       color: var(--ink);
+    }
+    input:focus, textarea:focus {
+      outline: 2px solid rgba(40, 92, 143, .2);
+      border-color: var(--blue);
+      background: white;
     }
     textarea { min-height: 104px; resize: vertical; }
     .fields { display: grid; gap: 12px; }
@@ -437,25 +502,43 @@ function homeHtml(): string {
       padding: 0 16px;
       font: inherit;
       font-weight: 700;
-      background: var(--accent);
+      background: var(--fjord);
       color: white;
       cursor: pointer;
     }
+    button:hover { background: var(--forest); }
     button:disabled { opacity: .6; cursor: wait; }
-    .stats {
+    .meta {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 10px;
+      gap: 12px;
     }
-    .stat {
-      min-height: 86px;
-      padding: 12px;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      background: #fbfcfc;
+    .route {
+      display: grid;
+      grid-template-columns: 12px minmax(0, 1fr);
+      gap: 11px;
+      align-items: start;
+      padding: 11px 0;
+      border-top: 1px solid var(--line);
     }
-    .stat span { display: block; color: var(--muted); font-size: .78rem; }
-    .stat strong { display: block; margin-top: 5px; font-size: 1.7rem; }
+    .route:first-of-type { border-top: 0; }
+    .dot {
+      width: 10px;
+      height: 10px;
+      margin-top: 4px;
+      border-radius: 999px;
+      background: var(--copper);
+    }
+    .dot.green { background: var(--forest); }
+    .dot.blue { background: var(--blue); }
+    .route strong { display: block; font-size: .9rem; }
+    .route span { display: block; margin-top: 3px; color: var(--muted); font-size: .84rem; line-height: 1.45; }
+    .source {
+      margin-top: 16px;
+      color: var(--muted);
+      font-size: .75rem;
+      line-height: 1.45;
+    }
+    .source a { color: var(--fjord); font-weight: 700; text-decoration: none; }
     .feed { display: grid; gap: 10px; margin-top: 16px; }
     .item { padding: 13px; }
     .item header {
@@ -480,60 +563,68 @@ function homeHtml(): string {
     .receipt {
       display: inline-block;
       margin-top: 10px;
-      color: var(--green);
+      color: var(--forest);
       font-weight: 700;
       text-decoration: none;
       font-size: .88rem;
     }
     .status { min-height: 22px; color: var(--muted); font-size: .9rem; }
     @media (max-width: 820px) {
-      header { min-height: 30vh; padding-top: 36px; }
+      .hero { min-height: 34vh; padding-top: 34px; }
       .grid { grid-template-columns: 1fr; }
-      .stats { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .deck { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
     @media (max-width: 520px) {
-      .stats { grid-template-columns: 1fr; }
+      .deck { grid-template-columns: 1fr; }
       .row { align-items: stretch; }
       button { width: 100%; }
+      .item header { align-items: flex-start; flex-direction: column; gap: 4px; }
     }
   </style>
 </head>
 <body>
-  <header>
-    <div class="hero">
-      <h1>Cloudflare Edge Guestbook</h1>
-      <p>A compact public demo wired through Workers, Durable Objects, D1, R2, Queues, and optional Workers AI.</p>
+  <header class="hero">
+    <div class="wrap hero-inner">
+      <div class="kicker">Bjorvika / Oslo</div>
+      <h1>Oslo Edge Registry</h1>
+      <p>A quiet Nordic check-in template shaped around the Opera House, fjord light, and an edge-native data trail.</p>
     </div>
   </header>
-  <main>
+  <main class="wrap">
+    <div class="deck" aria-label="Live edge state">
+      <div class="tile"><span>Visits</span><strong id="visits">0</strong></div>
+      <div class="tile"><span>Check-ins</span><strong id="roomCheckins">0</strong></div>
+      <div class="tile"><span>D1 rows</span><strong id="d1Checkins">0</strong></div>
+      <div class="tile"><span>Queue rows</span><strong id="queueRows">0</strong></div>
+    </div>
     <div class="grid">
       <section>
-        <h2>Check in</h2>
+        <h2>Fjord note</h2>
         <form id="form" class="fields">
           <div>
             <label for="name">Name</label>
-            <input id="name" name="name" maxlength="48" required autocomplete="name" placeholder="Ada">
+            <input id="name" name="name" maxlength="48" required autocomplete="name" placeholder="Ingrid">
           </div>
           <div>
-            <label for="message">Message</label>
-            <textarea id="message" name="message" maxlength="280" required placeholder="This Worker touched every storage primitive in one request."></textarea>
+            <label for="message">Note</label>
+            <textarea id="message" name="message" maxlength="280" required placeholder="Morning light over Bjorvika, clean lines, quiet data."></textarea>
           </div>
           <div class="row">
             <label class="toggle"><input id="useAi" type="checkbox"> Use Workers AI</label>
-            <button id="submit" type="submit">Submit</button>
+            <button id="submit" type="submit">Add note</button>
           </div>
           <div id="status" class="status" role="status"></div>
         </form>
         <div id="feed" class="feed"></div>
       </section>
       <aside>
-        <h2>Live edge state</h2>
-        <div class="stats">
-          <div class="stat"><span>DO visits</span><strong id="visits">0</strong></div>
-          <div class="stat"><span>DO check-ins</span><strong id="roomCheckins">0</strong></div>
-          <div class="stat"><span>D1 rows</span><strong id="d1Checkins">0</strong></div>
-          <div class="stat"><span>Queue rows</span><strong id="queueRows">0</strong></div>
+        <h2>Edge route</h2>
+        <div class="meta">
+          <div class="route"><i class="dot"></i><div><strong>Durable Object</strong><span>Shared room state for Oslo visitor counts.</span></div></div>
+          <div class="route"><i class="dot green"></i><div><strong>D1 + R2</strong><span>Structured notes in D1, receipts stored as R2 objects.</span></div></div>
+          <div class="route"><i class="dot blue"></i><div><strong>Queue worker</strong><span>Background audit events after each submitted note.</span></div></div>
         </div>
+        <p class="source">Photo: Oslo Opera House by Matic Kozinc, CC0 via <a href="https://commons.wikimedia.org/wiki/File:Oslo_Opera_House,_Oslo,_Norway_(Unsplash_njYp4KqjqF8).jpg" target="_blank" rel="noreferrer">Wikimedia Commons</a>.</p>
       </aside>
     </div>
   </main>
@@ -559,7 +650,7 @@ function homeHtml(): string {
       document.querySelector("#roomCheckins").textContent = status.room.totalCheckins;
       document.querySelector("#d1Checkins").textContent = status.d1.checkins;
       document.querySelector("#queueRows").textContent = status.d1.queueEvents;
-      feed.innerHTML = list.checkins.map(renderCheckin).join("") || '<div class="item"><p>No check-ins yet.</p></div>';
+      feed.innerHTML = list.checkins.map(renderCheckin).join("") || '<div class="item"><p>No Oslo notes yet.</p></div>';
     }
 
     function renderCheckin(item) {
@@ -581,7 +672,7 @@ function homeHtml(): string {
     form.addEventListener("submit", async event => {
       event.preventDefault();
       submit.disabled = true;
-      statusEl.textContent = "Writing to Worker bindings...";
+      statusEl.textContent = "Writing the Oslo note...";
       try {
         await api("/api/checkins", {
           method: "POST",
@@ -593,7 +684,7 @@ function homeHtml(): string {
           })
         });
         form.reset();
-        statusEl.textContent = "Stored in D1 and R2; queued for background processing.";
+        statusEl.textContent = "Stored at the edge and queued for the audit trail.";
         await refresh();
       } catch (error) {
         statusEl.textContent = error.message;

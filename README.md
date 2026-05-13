@@ -9,7 +9,7 @@ A small public Cloudflare Workers demo that uses:
 - Queues for background processing
 - Workers AI as an optional enrichment step
 
-The app is intentionally compact: visitors submit a check-in, the Durable Object increments shared counters, the Worker writes to D1 and R2, a Queue message records background audit data, and Workers AI can add a short note when enabled in the UI.
+The app is intentionally compact: visitors submit an Oslo-styled note, the Durable Object increments shared counters, the Worker writes to D1 and R2, a Queue message records background audit data, and Workers AI can add a short note when enabled in the UI.
 
 ## Run locally
 
@@ -49,4 +49,6 @@ The Worker deploys to `workers.dev` because `workers_dev` is enabled.
 
 ## Notes
 
-`wrangler.jsonc` uses a placeholder D1 id so this repo can be cloned before resources exist. Replace it with the id returned by `wrangler d1 create` before deploying.
+`wrangler.jsonc` is currently wired to `web-agent-cf-demo-db-2`. If you create a different D1 database, replace the `database_id` and keep the binding name as `DB`.
+
+The Oslo Opera House image is by Matic Kozinc and is available as CC0 via Wikimedia Commons.
