@@ -25,7 +25,7 @@
 	],
 	"d1_databases": [
 		{
-			"binding": "web_agent_cf_demo_db_2",
+			"binding": "DB",
 			"database_name": "web-agent-cf-demo-db-2",
 			"database_id": "ce5d5129-19eb-4e4a-9ce7-93c4f3f8aa3e"
 		}
@@ -34,10 +34,6 @@
 		{
 			"binding": "BUCKET",
 			"bucket_name": "web-agent-cf-demo-receipts"
-		},
-		{
-			"bucket_name": "web-agent-cf-demo-receipts",
-			"binding": "web_agent_cf_demo_receipts"
 		}
 	],
 	"queues": {

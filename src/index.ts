@@ -100,6 +100,10 @@ const worker: ExportedHandler<Env, DemoEvent> = {
       return html(homeHtml());
     }
 
+    if (url.pathname === "/favicon.ico" && request.method === "GET") {
+      return favicon();
+    }
+
     if (url.pathname === "/api/status" && request.method === "GET") {
       return handleStatus(env);
     }
@@ -318,6 +322,18 @@ function html(markup: string): Response {
         "default-src 'self'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src 'self' data:; connect-src 'self';"
     }
   });
+}
+
+function favicon(): Response {
+  return new Response(
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="12" fill="#d9480f"/><path d="M18 36c4-11 11-17 21-17 6 0 10 2 13 5-2-1-5-2-8-2-11 0-19 6-24 18l-2-4Zm5 10c5-11 12-16 21-16 4 0 7 .7 10 2-4 8-12 14-22 14h-9Z" fill="#fff"/></svg>`,
+    {
+      headers: {
+        "content-type": "image/svg+xml",
+        "cache-control": "public, max-age=86400"
+      }
+    }
+  );
 }
 
 function homeHtml(): string {
