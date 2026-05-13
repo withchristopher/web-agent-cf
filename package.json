@@ -10,6 +10,7 @@
   "scripts": {
     "dev": "wrangler dev",
     "deploy": "wrangler deploy",
+    "dry-run": "wrangler deploy --dry-run",
     "typecheck": "tsc --noEmit",
     "db:migrate:local": "wrangler d1 migrations apply web-agent-cf-demo-db --local",
     "db:migrate:remote": "wrangler d1 migrations apply web-agent-cf-demo-db --remote"
