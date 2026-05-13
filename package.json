@@ -12,8 +12,8 @@
     "deploy": "wrangler deploy",
     "dry-run": "wrangler deploy --dry-run",
     "typecheck": "tsc --noEmit",
-    "db:migrate:local": "wrangler d1 migrations apply web-agent-cf-demo-db --local",
-    "db:migrate:remote": "wrangler d1 migrations apply web-agent-cf-demo-db --remote"
+    "db:migrate:local": "wrangler d1 migrations apply web-agent-cf-demo-db-2 --local",
+    "db:migrate:remote": "wrangler d1 migrations apply web-agent-cf-demo-db-2 --remote"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "4.20260511.1",
